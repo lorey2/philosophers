@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: lorey <loic.rey.vs@gmail.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/02 00:13:49 by lorey             #+#    #+#             */
-/*   Updated: 2025/01/06 16:02:18 by lorey            ###   LAUSANNE.ch       */
+/*   Created: 2025/01/06 19:32:50 by lorey             #+#    #+#             */
+/*   Updated: 2025/01/06 19:32:54 by lorey            ###   LAUSANNE.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ int	main(int argc, char **argv)
 	{
 		if (parsing_argv(argc, argv, &data))
 			return (1);
+		init_data(&data);
 	}
 	else
 		return (write(1, "bad prompt (not enough or too many args)\n", 41), \

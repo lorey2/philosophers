@@ -6,11 +6,12 @@
 /*   By: lorey <loic.rey.vs@gmail.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 16:13:56 by lorey             #+#    #+#             */
-/*   Updated: 2025/01/06 17:26:05 by lorey            ###   LAUSANNE.ch       */
+/*   Updated: 2025/01/06 18:59:37 by lorey            ###   LAUSANNE.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
+#include <stdlib.h>
 
 int	errwr(char *text)
 {
@@ -18,85 +19,69 @@ int	errwr(char *text)
 	return (-1);
 }
 
-static int	handle_thread_error(int status, t_opcode opcode)
-{
-	if (status == 0)
-		return (0);
-	else if (status == EAGAIN)
-		return (errwr("No ressources to create another thread"));
-	else if (status == EPERM)
-		return (errwr("The caller does not have appropriate permission"));
-	else if (status == EINVAL && opcode == CREATE)
-		return (errwr("The value specified by attr is invalid."));
-	else if (status == EINVAL && opcode == JOIN || opcode == DETACH)
-		return (errwr("The value specified by thread is not joinable"));
-	else if (status == ESRCH)
-		return (errwr("No thread with the ID thread could be found."));
-	else if (status == EDEADLK)
-		return (errwr("A deadlock was detected or the value of... zzzz''"));
-	return (0);
-}
-
-int	safe_thread_handle(pthread_t *thread, void *(*fun)(void *), void *data, t_opcode opcode)
-{
-	if (opcode == CREATE)
-		return (handle_thread_error(pthread_create(thread, NULL, fun, data), opcode));
-	else if (opcode == JOIN)
-		return (handle_thread_error(pthread_join(*thread, NULL), opcode));
-	else if (opcode == DETACH)
-		return (handle_thread_error(pthread_detach(*thread), opcode));
-	else
-		return (errwr("wrong output for thread handle (CREATE, JOIN, DETACH)"));
-
-}
-
-static int	handle_mutex_error(int status, t_opcode opcode)
-{
-	if (status == 0)
-		return (0);
-	else if (status == EINVAL && (opcode == LOCK || opcode == UNLOCK))
-		return (errwr("The value specified by mutex is invalid."));
-	else if (status == EINVAL && opcode == INIT)
-		return (errwr("The value specified by attr is invalid."));
-	else if (status == EDEADLK)
-		return (errwr("A deadlock would occur \
-if the thread blocked waiting for mutex"));
-	else if (status == EPERM)
-		return (errwr("The current thread does not hold a lock on mutex"));
-	else if (status == ENOMEM)
-		return (errwr("The process cannot allocate enough memory\
-to create another mutex"));
-	else if (status == EBUSY)
-		return (errwr("Mutex is locked"));
-	return (0);
-}
-
-int	safe_mutex_handle(t_mtx *mutex, t_opcode opcode)
-{
-	if (opcode == LOCK)
-		return (handle_mutex_error(pthread_mutex_lock(mutex), opcode));
-	else if (opcode == UNLOCK)
-		return (handle_mutex_error(pthread_mutex_unlock(mutex), opcode));
-	else if (opcode == INIT)
-		return (handle_mutex_error(pthread_mutex_init(mutex, NULL), opcode));
-	else if (opcode == DESTROY)
-		return (handle_mutex_error(pthread_mutex_destroy(mutex), opcode));
-	else
-		return (errwr("Wrong opcode for mutex handle (LOCK, UNLOCK, INIT)"));
-}
-
 int	safe_malloc(void *pointer, size_t bytes)
 {
 	pointer = malloc(bytes);
 	if (!pointer)
-		return (-1);
+		errwr("malloc returned null (how did you do that)");
 	return (0);
+}
+
+//care for deadlock here
+
+static void	assign_forks(t_philo *philo, t_fork *forks, int position)
+{
+	int	philo_nbr;
+
+	philo_nbr = philo->data->philo_nbr;
+	if (philo->id % 2)
+	{
+		philo->first_fork = &forks[position];
+		philo->second_fork = &forks[(position + 1) % philo_nbr];
+	}
+	else
+	{
+		philo->first_fork = &forks[(position + 1) % philo_nbr];
+		philo->second_fork = &forks[position];
+	}
+}
+
+static void	philo_init(t_data *data)
+{
+	int		i;
+	t_philo	*philo;
+
+	i = -1;
+	while (++i < data->philo_nbr)
+	{
+		philo = data->philos + i;
+		philo->id = i + 1;
+		philo->full = false;
+		philo->meals_counter = 0;
+		philo->data = data;
+		assign_forks(philo, data->forks, i);
+	}
 }
 
 int	init_data(t_data *data)
 {
+	int	i;
+
+	i = -1;
 	data->end_simulation = false;
-	if (safe_malloc(data->philos, sizeof(data->philos) * data->philo_nbr))
+	if (safe_malloc(data->philos, sizeof(t_philo) * data->philo_nbr))
 		return (-1);
+	if (safe_malloc(data->forks, sizeof(t_fork) * data->philo_nbr))
+		return (-1);
+	write(1, "salut", 5);
+	write (1, ft_itoa(data->philo_nbr), ft_strlen(ft_itoa(data->philo_nbr)));
+	while (++i < data->philo_nbr)
+	{
+		write(1, "A", 1);
+		safe_mutex_handle(&data->forks[i].fork, INIT);
+		data->forks[i].fork_id = i;
+	}
+	write(1, "A", 1);
+	philo_init(data);
 	return (0);
 }

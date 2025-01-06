@@ -6,7 +6,7 @@
 /*   By: lorey <loic.rey.vs@gmail.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/01 20:11:53 by lorey             #+#    #+#             */
-/*   Updated: 2025/01/06 16:33:27 by lorey            ###   LAUSANNE.ch       */
+/*   Updated: 2025/01/06 18:39:23 by lorey            ###   LAUSANNE.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,8 @@ typedef struct s_philo
 	int			meals_counter;
 	bool		full;
 	int			last_meal_time;
-	t_fork		*left_fork;
-	t_fork		*right_fork;
+	t_fork		*first_fork;
+	t_fork		*second_fork;
 	pthread_t	thread_id;
 	t_data		*data;
 }			t_philo;
@@ -72,5 +72,12 @@ struct s_data
 long long	ft_atoi(const char *str);
 size_t		ft_strlen_skip_zero(const char *s);
 size_t		ft_strlen(const char *s);
+int			errwr(char *text);
+int			safe_mutex_handle(t_mtx *mutex, t_opcode opcode);
+int			safe_thread_handle(pthread_t *thread, \
+			void *(*fun)(void *), void *data, t_opcode opcode);
+int			safe_malloc(void *pointer, size_t bytes);
+int			init_data(t_data *data);
+char		*ft_itoa(int nbr);
 
 #endif
