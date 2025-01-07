@@ -6,7 +6,7 @@
 /*   By: lorey <loic.rey.vs@gmail.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 19:32:50 by lorey             #+#    #+#             */
-/*   Updated: 2025/01/06 19:32:54 by lorey            ###   LAUSANNE.ch       */
+/*   Updated: 2025/01/07 20:59:25 by lorey            ###   LAUSANNE.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 int	ft_isalnum(int argc, char **argv, t_data *data)
 {
-	int	i;
+	int 	i;
 	int	j;
 
 	i = 0;
@@ -48,7 +48,7 @@ int	parsing_argv(int argc, char **argv, t_data *data)
 		temp = ft_atoi(argv[i]);
 		if (temp > 2147483647)
 			return (write(1, "number too big. MAX_INT is the limit", 36), 1);
-		(i == 1) && (data->philo_nbr = temp * 1e3);
+		(i == 1) && (data->philo_nbr = temp);
 		(i == 2) && (data->time_to_eat = temp * 1e3);
 		(i == 3) && (data->time_to_eat = temp * 1e3);
 		(i == 4) && (data->time_to_sleep = temp * 1e3);

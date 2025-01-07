@@ -6,7 +6,7 @@
 /*   By: lorey <loic.rey.vs@gmail.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 16:13:56 by lorey             #+#    #+#             */
-/*   Updated: 2025/01/06 18:59:37 by lorey            ###   LAUSANNE.ch       */
+/*   Updated: 2025/01/07 14:52:48 by lorey            ###   LAUSANNE.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@ int	errwr(char *text)
 	return (-1);
 }
 
-int	safe_malloc(void *pointer, size_t bytes)
+int	safe_malloc(void **pointer, size_t bytes)
 {
-	pointer = malloc(bytes);
-	if (!pointer)
+	*pointer = malloc(bytes);
+	if (!*pointer)
 		errwr("malloc returned null (how did you do that)");
 	return (0);
 }
@@ -54,9 +54,10 @@ static void	philo_init(t_data *data)
 	i = -1;
 	while (++i < data->philo_nbr)
 	{
+		write(1, "salut", 5);
 		philo = data->philos + i;
-		philo->id = i + 1;
 		philo->full = false;
+		philo->id = i + 1;
 		philo->meals_counter = 0;
 		philo->data = data;
 		assign_forks(philo, data->forks, i);
@@ -69,19 +70,15 @@ int	init_data(t_data *data)
 
 	i = -1;
 	data->end_simulation = false;
-	if (safe_malloc(data->philos, sizeof(t_philo) * data->philo_nbr))
+	if (safe_malloc((void **)&data->philos, sizeof(t_philo) * data->philo_nbr))
 		return (-1);
-	if (safe_malloc(data->forks, sizeof(t_fork) * data->philo_nbr))
+	if (safe_malloc((void **)&data->forks, sizeof(t_fork) * data->philo_nbr))
 		return (-1);
-	write(1, "salut", 5);
-	write (1, ft_itoa(data->philo_nbr), ft_strlen(ft_itoa(data->philo_nbr)));
 	while (++i < data->philo_nbr)
 	{
-		write(1, "A", 1);
 		safe_mutex_handle(&data->forks[i].fork, INIT);
 		data->forks[i].fork_id = i;
 	}
-	write(1, "A", 1);
 	philo_init(data);
 	return (0);
 }

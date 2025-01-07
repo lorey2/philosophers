@@ -6,7 +6,7 @@
 /*   By: lorey <loic.rey.vs@gmail.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/01 20:11:53 by lorey             #+#    #+#             */
-/*   Updated: 2025/01/06 18:39:23 by lorey            ###   LAUSANNE.ch       */
+/*   Updated: 2025/01/07 14:51:22 by lorey            ###   LAUSANNE.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ int			errwr(char *text);
 int			safe_mutex_handle(t_mtx *mutex, t_opcode opcode);
 int			safe_thread_handle(pthread_t *thread, \
 			void *(*fun)(void *), void *data, t_opcode opcode);
-int			safe_malloc(void *pointer, size_t bytes);
+int			safe_malloc(void **pointer, size_t bytes);
 int			init_data(t_data *data);
 char		*ft_itoa(int nbr);
 
