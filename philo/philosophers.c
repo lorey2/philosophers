@@ -6,7 +6,7 @@
 /*   By: lorey <loic.rey.vs@gmail.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 19:32:50 by lorey             #+#    #+#             */
-/*   Updated: 2025/01/07 20:59:25 by lorey            ###   LAUSANNE.ch       */
+/*   Updated: 2025/04/16 19:51:52 by lorey            ###   LAUSANNE.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 // ./philosophers nbr_of_philo time_to_die time_to_eat time_to_sleep (nbr meals)
 
-int	ft_isalnum(int argc, char **argv, t_data *data)
+int	ft_isalnum(char **argv)
 {
-	int 	i;
+	int	i;
 	int	j;
 
 	i = 0;
@@ -34,12 +34,15 @@ int	ft_isalnum(int argc, char **argv, t_data *data)
 	return (0);
 }
 
+//check if all args are between 60 and MAX_INT
+//put every args in correct place
+
 int	parsing_argv(int argc, char **argv, t_data *data)
 {
 	int			i;
 	long long	temp;
 
-	if (ft_isalnum(argc, argv, data))
+	if (ft_isalnum(argv))
 		return (1);
 	i = 0;
 	data->nbr_limit_meals = -1;
@@ -48,10 +51,10 @@ int	parsing_argv(int argc, char **argv, t_data *data)
 		temp = ft_atoi(argv[i]);
 		if (temp > 2147483647)
 			return (write(1, "number too big. MAX_INT is the limit", 36), 1);
-		(i == 1) && (data->philo_nbr = temp);
-		(i == 2) && (data->time_to_eat = temp * 1e3);
-		(i == 3) && (data->time_to_eat = temp * 1e3);
-		(i == 4) && (data->time_to_sleep = temp * 1e3);
+		(void)((i == 1) && (data->philo_nbr = temp));
+		(void)((i == 2) && (data->time_to_die = temp * 1e3));
+		(void)((i == 3) && (data->time_to_eat = temp * 1e3));
+		(void)((i == 4) && (data->time_to_sleep = temp * 1e3));
 		if (i == 5)
 			if (argc == 6)
 				data->nbr_limit_meals = temp;
@@ -71,6 +74,9 @@ int	main(int argc, char **argv)
 		if (parsing_argv(argc, argv, &data))
 			return (1);
 		init_data(&data);
+		if (!data.error)
+			dinner_start(&data);
+		clean(&data);
 	}
 	else
 		return (write(1, "bad prompt (not enough or too many args)\n", 41), \
